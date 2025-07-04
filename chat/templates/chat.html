@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>الدردشة</title>
+</head>
+<body>
+  <h2>مرحباً {{ user.username }}</h2>
+
+  <form method="post">
+    {% csrf_token %}
+    <input type="text" name="content" placeholder="اكتب رسالتك هنا..." required>
+    <button type="submit">إرسال</button>
+  </form>
+
+  <hr>
+
+  {% for msg in messages %}
+    <p>
+      <strong>{{ msg.user.username }}</strong>: {{ msg.content }}
+      <small>({{ msg.created_at|date:"H:i:s" }})</small>
+      {% if msg.user == user %}
+        <a href="{% url 'chat:delete' msg.id %}">🗑️</a>
+      {% endif %}
+    </p>
+  {% empty %}
+    <p>لا توجد رسائل.</p>
+  {% endfor %}
+
+</body>
+</html>
