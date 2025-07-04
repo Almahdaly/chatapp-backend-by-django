@@ -26,5 +26,39 @@
     <p>لا توجد رسائل.</p>
   {% endfor %}
 
+ <script>
+  const socket = new WebSocket('ws://' + window.location.host + '/ws/chat/');
+
+  socket.onmessage = function(e) {
+    const data = JSON.parse(e.data);
+    const chat = document.createElement('p');
+    let deleteBtn = '';
+
+    if (data.username === "{{ user.username }}") {
+      deleteBtn = ` <a href="/chat/delete/${data.id}/">🗑️</a>`;
+    }
+
+    chat.innerHTML = `<strong>${data.username}</strong>: ${data.message}${deleteBtn}`;
+    document.body.appendChild(chat);
+  };
+
+  const form = document.querySelector('form');
+  form.onsubmit = function(e) {
+    e.preventDefault();
+    const input = document.querySelector('input[name="content"]');
+    const message = input.value;
+    const username = "{{ user.username }}";
+
+    socket.send(JSON.stringify({
+      'message': message,
+      'username': username
+    }));
+
+    input.value = '';
+  };
+</script>
+
 </body>
 </html>
+
+
